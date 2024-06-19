@@ -1,0 +1,3 @@
+#spring.application.name=shopapp;
+server:
+  port: 8088

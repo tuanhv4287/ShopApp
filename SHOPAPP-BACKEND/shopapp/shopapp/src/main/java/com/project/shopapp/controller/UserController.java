@@ -14,28 +14,32 @@ import com.project.shopapp.dtos.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/users")
+@RequestMapping("${api.prefix}/users")
 public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO,
-                                        BindingResult result ){
-        try{
-            if(result.hasErrors()){
+                                        BindingResult result) {
+        try {
+            if (result.hasErrors()) {
                 List<String> errorMessages = result.getFieldErrors()
                         .stream()
                         .map(FieldError::getDefaultMessage)
                         .toList();
                 return ResponseEntity.badRequest().body(errorMessages);
-            }if(!userDTO.getPassword().equals(userDTO.getRetypePassword())){
+            }
+            if (!userDTO.getPassword().equals(userDTO.getRetypePassword())) {
                 return ResponseEntity.badRequest().body("Password does not match");
             }
             return ResponseEntity.ok("Register successfully");
-        } catch(Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-    };
+    }
+
+    ;
+
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody UserLoginDTO userLoginDTO){
+    public ResponseEntity<String> login(@Valid @RequestBody UserLoginDTO userLoginDTO) {
 
         return ResponseEntity.ok("some token");
     }

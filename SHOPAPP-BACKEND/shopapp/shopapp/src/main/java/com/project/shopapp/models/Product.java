@@ -11,10 +11,14 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Product extends BaseEntity {
+public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category categoryId;
 
     @Column(name = "name", nullable = false, length = 350)
     private String name;
@@ -28,7 +32,5 @@ public class Product extends BaseEntity {
     private String description;
 
 
-    @ManyToOne
-    @Column(name = "catelogy_id")
-    private Long catelogyId;
+
 }

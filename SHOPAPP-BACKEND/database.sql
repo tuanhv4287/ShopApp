@@ -71,6 +71,10 @@ CREATE TABLE orders(
     status VARCHAR(20),
     total_money FLOAT CHECK(total_money >= 0) 
 );
+ALTER TABLE orders ADD COLUMN email VARCHAR(100) DEFAULT '';
+ALTER TABLE orders ADD COLUMN phone_number VARCHAR(20) NOT NULL;
+ALTER TABLE orders ADD COLUMN address VARCHAR(200) NOT NULL;
+ALTER TABLE orders ADD COLUMN note VARCHAR(100) DEFAULT '';
 ALTER TABLE orders ADD COLUMN shipping_method VARCHAR(100);
 ALTER TABLE orders ADD COLUMN shipping_address VARCHAR(200);
 ALTER TABLE orders ADD COLUMN shipping_date DATE;
@@ -89,3 +93,6 @@ CREATE TABLE order_details(
     total_money FLOAT CHECK(total_money >= 0),
     color VARCHAR(20) DEFAULT ''
 );
+ALTER TABLE order_details ADD COLUMN product_id int;
+ALTER TABLE order_details ADD CONSTRAINT product_id
+FOREIGN KEY (product_id) REFERENCES products(id);

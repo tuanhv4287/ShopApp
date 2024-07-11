@@ -1,5 +1,6 @@
 package com.project.shopapp.dtos;
 
+import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
@@ -10,5 +11,6 @@ import lombok.*;
 @NoArgsConstructor
 public class CategoryDTO {
     @NotEmpty(message = "Category's name cannot be empty")
-    private  String name;
+    private String name;
+
 }

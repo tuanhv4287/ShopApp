@@ -3,22 +3,17 @@ package com.project.shopapp.models;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Table(name = "products")
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Product {
+@Builder
+public class Product extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category categoryId;
 
     @Column(name = "name", nullable = false, length = 350)
     private String name;
@@ -31,6 +26,8 @@ public class Product {
     @Column(name = "description")
     private String description;
 
-
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
 }

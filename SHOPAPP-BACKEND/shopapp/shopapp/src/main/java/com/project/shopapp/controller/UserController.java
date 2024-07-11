@@ -3,7 +3,6 @@ package com.project.shopapp.controller;
 import com.project.shopapp.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -41,11 +40,9 @@ public class UserController {
         }
     }
 
-    ;
-
     @PostMapping("/login")
     public ResponseEntity<String> login(@Valid @RequestBody UserLoginDTO userLoginDTO) {
     String token = userService.login(userLoginDTO.getPhoneNumber(), userLoginDTO.getPassword());
-        return ResponseEntity.ok("some token");
+        return ResponseEntity.ok(token);
     }
 }

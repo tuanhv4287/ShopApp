@@ -5,7 +5,6 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Entity
 @Data
 @Getter
 @Setter
@@ -13,20 +12,20 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @MappedSuperclass
 public class BaseEntity {
-    @Column(name = "create_at")
-    private LocalDateTime createAt;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
-    @Column(name = "update_at")
-    private LocalDateTime updateAt;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
-        createAt = LocalDateTime.now();
-        updateAt = LocalDateTime.now();
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updateAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 }

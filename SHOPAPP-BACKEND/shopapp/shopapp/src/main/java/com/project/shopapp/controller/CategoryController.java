@@ -35,7 +35,7 @@ public class CategoryController {
     }
 
     @GetMapping("") //http://localhost:8088/api/v1/categories?page=1&limit=10
-    public ResponseEntity<List> getAllCategories(
+    public ResponseEntity<?> getAllCategories(
             @RequestParam("page") int page,
             @RequestParam("limit") int limit
     ) {

@@ -8,6 +8,7 @@ import com.project.shopapp.repositories.RoleRepository;
 import com.project.shopapp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.zip.DataFormatException;
@@ -16,6 +17,7 @@ import java.util.zip.DataFormatException;
 public class UserService implements IUserService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public User createUser(UserDTO userDTO) throws DataNotFoundException {
@@ -37,6 +39,8 @@ public class UserService implements IUserService {
         newUser.setRole(role);
         if (userDTO.getFacebookAccountId() == 0 && userDTO.getGoogleAccountId() == 0) {
             String password = userDTO.getPassword();
+            String encoderPassword = passwordEncoder.encode(password);
+            newUser.setPassword(encoderPassword);
         }
         return userRepository.save(newUser);
     }

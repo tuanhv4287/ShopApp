@@ -1,5 +1,6 @@
 package com.project.shopapp.controller;
 
+import com.project.shopapp.models.User;
 import com.project.shopapp.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody UserLoginDTO userLoginDTO) {
+    public ResponseEntity<String> login(@Valid @RequestBody UserLoginDTO userLoginDTO) throws Exception {
     String token = userService.login(userLoginDTO.getPhoneNumber(), userLoginDTO.getPassword());
         return ResponseEntity.ok(token);
     }

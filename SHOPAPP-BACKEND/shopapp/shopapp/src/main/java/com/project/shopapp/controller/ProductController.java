@@ -1,6 +1,7 @@
 package com.project.shopapp.controller;
 
 import com.github.javafaker.Faker;
+import com.project.shopapp.components.LocalizationUtils;
 import com.project.shopapp.dtos.ProductDTO;
 import com.project.shopapp.dtos.ProductImageDTO;
 import com.project.shopapp.models.Product;
@@ -39,6 +40,8 @@ import java.util.UUID;
 @RequestMapping("${api.prefix}/products")
 public class ProductController {
     private final IProductService productService;
+    private final LocalizationUtils localizationUtils;
+
     @PostMapping("")
     public ResponseEntity<?> createProduct(
             @Valid @RequestBody ProductDTO productDTO,

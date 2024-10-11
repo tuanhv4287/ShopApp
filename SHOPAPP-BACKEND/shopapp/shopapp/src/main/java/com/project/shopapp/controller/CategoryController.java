@@ -1,5 +1,6 @@
 package com.project.shopapp.controller;
 
+import com.project.shopapp.components.LocalizationUtils;
 import com.project.shopapp.dtos.CategoryDTO;
 import com.project.shopapp.models.Category;
 import com.project.shopapp.services.CategoryService;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryController {
     private final CategoryService categoryService;
+    private final LocalizationUtils localizationUtils;
     @PostMapping("")
     public ResponseEntity<?> insertCategory(
             @Valid @RequestBody CategoryDTO categoryDTO,

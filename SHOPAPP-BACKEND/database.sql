@@ -96,3 +96,6 @@ CREATE TABLE order_details(
 ALTER TABLE order_details ADD COLUMN product_id int;
 ALTER TABLE order_details ADD CONSTRAINT product_id
 FOREIGN KEY (product_id) REFERENCES products(id);
+
+--UPDATE products SET price = Round(price / 1000000,1) WHERE price >1000000;  // edit low price
+-- UPDATE products SET thumbnail = (SELECT image_url FROM product_images WHERE products.id = product_images.product_id LIMIT 1) setup product_images id 1 in thumbnail of product

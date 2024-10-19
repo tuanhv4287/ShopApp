@@ -115,7 +115,9 @@ public class ProductController {
                         .contentType(MediaType.IMAGE_JPEG)
                         .body(resource);
             } else {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(new UrlResource(Paths.get("uploads/notFound.jpg").toUri()));
             }
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
@@ -141,7 +143,7 @@ public class ProductController {
         return contentType != null && contentType.startsWith("image/");
     }
 
-    @GetMapping("") //http://localhost:8088/api/v1/categories?page=1&limit=10
+    @GetMapping("") //http://localhost:8088/api/v1/products?page=1&limit=10
     public ResponseEntity<ProductListReponse> getProducts(
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "0", name = "category_id") Long category_id,

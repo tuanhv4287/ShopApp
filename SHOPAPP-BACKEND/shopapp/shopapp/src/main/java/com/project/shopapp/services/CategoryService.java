@@ -33,6 +33,7 @@ public class CategoryService implements ICategoryService {
         return categoryRepository.findAll();
     }
 
+
     @Override
     public Category updateCategory(Long categoryId, CategoryDTO categoryDTO) {
         Category existingCategory = getCategoryById(categoryId);

@@ -33,7 +33,7 @@ public class JwtTokenFilter extends OncePerRequestFilter{
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         try{
-            if (isByPassToken(request)){
+            if (isBypassToken(request)){
                 filterChain.doFilter(request,response);
                 return;
             }
@@ -61,17 +61,17 @@ public class JwtTokenFilter extends OncePerRequestFilter{
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
         }
     }
-    private boolean isByPassToken(@NonNull HttpServletRequest request){
-        final List<Pair<String, String>> byPassTokens = Arrays.asList(
+    private boolean isBypassToken(@NonNull HttpServletRequest request){
+        final List<Pair<String, String>> bypassTokens = Arrays.asList(
                 Pair.of(String.format("%s/roles",apiPrefix),"GET"),
                 Pair.of(String.format("%s/products",apiPrefix),"GET"),
                 Pair.of(String.format("%s/categories",apiPrefix),"GET"),
                 Pair.of(String.format("%s/users/register",apiPrefix),"POST"),
                 Pair.of(String.format("%s/users/login",apiPrefix),"POST")
         );
-        for (Pair<String, String> byPassToken:byPassTokens){
-            if(request.getServletPath().contains(byPassToken.getFirst()) &&
-                    request.getMethod().equals(byPassToken.getSecond())){
+        for (Pair<String, String> bypassToken:bypassTokens){
+            if(request.getServletPath().contains(bypassToken.getFirst()) &&
+                    request.getMethod().equals(bypassToken.getSecond())){
                 return true;
             }
         }

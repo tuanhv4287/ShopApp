@@ -4,6 +4,7 @@ import com.project.shopapp.components.LocalizationUtils;
 import com.project.shopapp.dtos.CategoryDTO;
 import com.project.shopapp.models.Category;
 import com.project.shopapp.services.CategoryService;
+import com.project.shopapp.services.ICategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ import java.util.List;
 @RequestMapping("${api.prefix}/categories")
 @RequiredArgsConstructor
 public class CategoryController {
-    private final CategoryService categoryService;
+    private final ICategoryService categoryService;
     private final LocalizationUtils localizationUtils;
     @PostMapping("")
     public ResponseEntity<?> insertCategory(
@@ -35,7 +36,7 @@ public class CategoryController {
     }
 
     @GetMapping("") //http://localhost:8088/api/v1/categories?page=1&limit=10
-    public ResponseEntity<?> getAllCategories(
+    public ResponseEntity<List<Category>> getAllCategories(
             @RequestParam("page") int page,
             @RequestParam("limit") int limit
     ) {

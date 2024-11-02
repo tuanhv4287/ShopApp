@@ -11,13 +11,13 @@ import com.project.shopapp.repositories.CategoryRepository;
 import com.project.shopapp.repositories.ProductImageRepository;
 import com.project.shopapp.repositories.ProductRepository;
 import com.project.shopapp.responses.ProductResponse;
-import jakarta.persistence.ManyToOne;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -44,10 +44,17 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public Product getProductByid(long productId) throws Exception {
-        return productRepository.findById(productId)
-                .orElseThrow(()-> new DataNotFoundException(
-                        "Can't find product with id= "+productId));
+    public Product getProductById(long productId) throws Exception {
+        Optional<Product> optionalProduct = productRepository.getDetailProduct(productId);
+        if(optionalProduct.isPresent()){
+            return optionalProduct.get();
+        }
+        throw new DataNotFoundException("Can't find product with id= " + productId);
+    }
+
+    @Override
+    public List<Product> findProductsByIds(List<Long> productsIds) throws Exception {
+        return productRepository.findProductsByIds(productsIds);
     }
 
     @Override
@@ -66,7 +73,7 @@ public class ProductService implements IProductService{
             long id,
             ProductDTO productDTO)
             throws Exception {
-        Product exitstingProduct = getProductByid(id);
+        Product exitstingProduct = getProductById(id);
         if(exitstingProduct != null)
         {
             Category exitstingCategory = categoryRepository.findById(productDTO.getCategoryId())

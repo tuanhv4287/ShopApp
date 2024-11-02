@@ -9,6 +9,7 @@ import com.project.shopapp.models.ProductImage;
 import com.project.shopapp.responses.ProductListReponse;
 import com.project.shopapp.responses.ProductResponse;
 import com.project.shopapp.services.IProductService;
+import com.project.shopapp.utils.MessageKeys;
 import jakarta.validation.Path;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,10 +32,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -66,14 +65,15 @@ public class ProductController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadImages(
             @PathVariable("id") Long productId,
-            @ModelAttribute("file") List<MultipartFile> files)
+            @ModelAttribute("files") List<MultipartFile> files)
     {
         try {
-            Product existingProduct = productService.getProductByid(productId);
+            Product existingProduct = productService.getProductById(productId);
             files = files == null ? new ArrayList<MultipartFile>() : files;
             if(files.size() > ProductImage.MAXIMUM_IMAGES_PER_PRODUCT)
             {
-                return ResponseEntity.badRequest().body("You can only upload maximum 5 images");
+                return ResponseEntity.badRequest().body(localizationUtils
+                        .getLocalizedMessage(MessageKeys.UPLOAD_IMAGES_MAX_5));
             }
             List<ProductImage> productImages = new ArrayList<>();
             for (MultipartFile file : files) {
@@ -82,12 +82,13 @@ public class ProductController {
                 }
                 if (file.getSize() > 10 * 1024 * 1024) {
                     return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
-                            .body("File is too large! Maximum size is 10MB");
+                            .body(localizationUtils
+                                    .getLocalizedMessage(MessageKeys.UPLOAD_IMAGES_FILE_LARGE));
                 }
                 String contentType = file.getContentType();
                 if (contentType == null || !contentType.startsWith("image/")) {
                     return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-                            .body("File must be an image");
+                            .body(localizationUtils.getLocalizedMessage(MessageKeys.UPLOAD_IMAGES_FILE_MUST_BE_IMAGE));
                 }
                 String filename = storeFile(file);
                 ProductImage productImage = productService.createProductImage(
@@ -167,8 +168,21 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(@PathVariable("id") Long productId) {
         try {
-            Product existingProduct = productService.getProductByid(productId);
+            Product existingProduct = productService.getProductById(productId);
             return ResponseEntity.ok(ProductResponse.fromProduct(existingProduct));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/by-ids")
+    public ResponseEntity<?> getProductsByIds(@RequestParam("ids") String ids) {
+        try {
+            List<Long> productIds = Arrays.stream(ids.split(","))
+                    .map(Long::parseLong)
+                    .collect(Collectors.toList());
+            List<Product> products = productService.findProductsByIds(productIds);
+            return ResponseEntity.ok(products);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

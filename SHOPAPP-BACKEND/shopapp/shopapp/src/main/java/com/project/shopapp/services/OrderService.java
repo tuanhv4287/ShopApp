@@ -1,11 +1,12 @@
 package com.project.shopapp.services;
 
+import com.project.shopapp.dtos.CartItemDTO;
 import com.project.shopapp.dtos.OrderDTO;
 import com.project.shopapp.exceptions.DataNotFoundException;
-import com.project.shopapp.models.Order;
-import com.project.shopapp.models.OrderStatus;
-import com.project.shopapp.models.User;
+import com.project.shopapp.models.*;
+import com.project.shopapp.repositories.OrderDetailRepository;
 import com.project.shopapp.repositories.OrderRepository;
+import com.project.shopapp.repositories.ProductRepository;
 import com.project.shopapp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,6 +23,8 @@ import java.util.List;
 public class OrderService implements IOrderService{
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
+    private final OrderDetailRepository orderDetailRepository;
+    private final ProductRepository productRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -34,15 +38,33 @@ public class OrderService implements IOrderService{
         Order order = new Order();
         modelMapper.map(orderDTO, order);
         order.setUser(user);
-        order.setOrderDate(new Date());
+        order.setOrderDate(LocalDate.now());
         order.setStatus(OrderStatus.PENDING);
-        LocalDate shippingDate = orderDTO.getShippingDate() == null ? LocalDate.now() : orderDTO.getShippingDate();
-        if(shippingDate.isBefore(LocalDate.now())){
+        LocalDate shippingDate = orderDTO.getShippingDate() == null
+                ? LocalDate.now() : orderDTO.getShippingDate();
+        if (shippingDate.isBefore(LocalDate.now())) {
             throw new DataNotFoundException("Date must be at least today !");
         }
         order.setShippingDate(shippingDate);
         order.setActive(true);
+        order.setTotalMoney(order.getTotalMoney());
         orderRepository.save(order);
+        List<OrderDetail> orderDetails = new ArrayList<>();
+        for (CartItemDTO cartItemDTO : orderDTO.getCartItems()){
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setOrder(order);
+            Long productId = cartItemDTO.getProductId();
+            int quantity = cartItemDTO.getQuantity();
+
+            Product product = productRepository.findById(productId).orElseThrow(
+                    ()-> new DataNotFoundException("Product not found with id:" + productId)
+            );
+            orderDetail.setProduct(product);
+            orderDetail.setNumberOfProducts(quantity);
+            orderDetail.setPrice(product.getPrice());
+            orderDetails.add(orderDetail);
+        }
+        orderDetailRepository.saveAll(orderDetails);
         return order;
     }
 

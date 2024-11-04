@@ -65,7 +65,7 @@ public class JwtTokenUtils {
         return claimsResolver.apply(claims);
     }
     //Check expiration
-    private boolean isTokenExpired(String token){
+    public boolean isTokenExpired(String token){
         Date expirationDate = this.extractClaim(token, Claims::getExpiration);
         return expirationDate.before(new Date());
     }

@@ -9,6 +9,7 @@ import com.project.shopapp.components.LocalizationUtils;
 import com.project.shopapp.utils.MessageKeys;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -82,6 +83,24 @@ public class UserController {
             return ResponseEntity.ok(UserResponse.fromUser(user));
 
         }catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    @PutMapping("/details/{userId}")
+    public ResponseEntity<UserResponse> updateUserDetails(
+            @PathVariable Long userId,
+            @RequestBody UpdateUserDTO updateUserDTO,
+            @RequestHeader("Authorization") String authorizationHeader
+    ){
+        try{
+            String extractedToken = authorizationHeader.substring(7);
+            User user = userService.getUserDetailsFromToken(extractedToken);
+            if(user.getId() != userId) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            User updatedUser = userService.updateUser(userId, updateUserDTO);
+            return ResponseEntity.ok(UserResponse.fromUser(updatedUser));
+        } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }

@@ -10,6 +10,7 @@ import com.project.shopapp.models.User;
 import com.project.shopapp.repositories.RoleRepository;
 import com.project.shopapp.repositories.UserRepository;
 import com.project.shopapp.utils.MessageKeys;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -58,12 +59,51 @@ public class UserService implements IUserService {
         }
         return userRepository.save(newUser);
     }
+    @Transactional
+    @Override
+    public User updateUser(Long userId, UpdateUserDTO updatedUserDTO) throws Exception{
+        User existingUser = userRepository.findById(userId).orElseThrow(()-> new DataNotFoundException("User not found"));
+        String newPhoneNumber = updatedUserDTO.getPhoneNumber();
+        if(!existingUser.getPhoneNumber().equals(newPhoneNumber) && userRepository.existsByPhoneNumber(newPhoneNumber)){
+            throw  new DataIntegrityViolationException("Phone number already exists");
+        }
+
+        if(updatedUserDTO.getFullname() != null){
+            existingUser.setFullName(updatedUserDTO.getFullname());
+        }
+
+        if(newPhoneNumber != null){
+            existingUser.setPhoneNumber(updatedUserDTO.getPhoneNumber());
+        }
+
+        if(updatedUserDTO.getAddress() != null){
+            existingUser.setAddress(updatedUserDTO.getAddress());
+        }
+
+        if(updatedUserDTO.getDateOfBirth() != null){
+            existingUser.setDateOfBirth(updatedUserDTO.getDateOfBirth());
+        }
+
+        if(updatedUserDTO.getFacebookAccountId() > 0){
+            existingUser.setFacebookAccountId(updatedUserDTO.getFacebookAccountId());
+        }
+
+        if(updatedUserDTO.getGoogleAccountId() > 0){
+            existingUser.setGoogleAccountId(updatedUserDTO.getGoogleAccountId());
+        }
+        if(updatedUserDTO.getPassword() != null && !updatedUserDTO.getPassword().isEmpty()){
+            String newPassword = updatedUserDTO.getPassword();
+            String encodedPassword = passwordEncoder.encode(newPassword);
+            existingUser.setPassword(encodedPassword);
+        }
+        return userRepository.save(existingUser);
+    }
 
     @Override
     public String login(String phoneNumber, String password, Long roleId) throws Exception {
         Optional<User> optionalUser = userRepository.findByPhoneNumber(phoneNumber);
         if(optionalUser.isEmpty()){
-            throw new DataNotFoundException("Invalid phonenumber / password");
+            throw new DataNotFoundException("Invalid phone number / password");
         }
 //        return optionalUser.get();
         User existingUser = optionalUser.get();

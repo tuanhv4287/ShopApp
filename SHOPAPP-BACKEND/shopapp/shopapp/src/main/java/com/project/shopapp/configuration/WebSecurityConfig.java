@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -23,7 +24,7 @@ import static org.springframework.http.HttpMethod.*;
 
 @Configuration
 @RequiredArgsConstructor
-@EnableMethodSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 
 public class WebSecurityConfig {
     private final JwtTokenFilter jwtTokenFilter;
@@ -42,6 +43,7 @@ public class WebSecurityConfig {
 
                             .requestMatchers(GET,
                                     String.format("%s/roles**", apiPrefix)).permitAll()
+
                             .requestMatchers(GET,
                                     String.format("%s/products**", apiPrefix)).permitAll()
 
@@ -50,6 +52,7 @@ public class WebSecurityConfig {
 
                             .requestMatchers(GET,
                                     String.format("%s/products/images/**", apiPrefix)).permitAll()
+
                             .requestMatchers(GET,
                                     String.format("%s/products/images**", apiPrefix)).permitAll()
 
@@ -61,7 +64,6 @@ public class WebSecurityConfig {
 
                             .requestMatchers(DELETE,
                                     String.format("%s/products/**", apiPrefix)).hasAnyRole(Role.ADMIN)
-
 
                             .requestMatchers(GET,
                                     String.format("%s/categories**", apiPrefix)).permitAll()
